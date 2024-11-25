@@ -73,6 +73,7 @@ type Box struct {
 	Ftp       []checks.Ftp
 	Imap      []checks.Imap
 	Ldap      []checks.Ldap
+	Pop       []checks.Pop
 	Ping      []checks.Ping
 	Rdp       []checks.Rdp
 	Smb       []checks.Smb
@@ -102,6 +103,9 @@ func getBoxChecks(b Box) []checks.Check {
 		checkList = append(checkList, c)
 	}
 	for _, c := range b.Imap {
+		checkList = append(checkList, c)
+	}
+	for _, c := range b.Pop {
 		checkList = append(checkList, c)
 	}
 	for _, c := range b.Ping {
@@ -440,6 +444,19 @@ func validateChecks(boxList []Box) error {
 				}
 				if ck.Anonymous {
 					return errors.New("anonymous ldap not supported")
+				}
+				boxList[i].CheckList[j] = ck
+			case checks.Pop:
+				ck := c.(checks.Pop)
+				ck.IP = b.IP
+				if ck.Display == "" {
+					ck.Display = "pop"
+				}
+				if ck.Name == "" {
+					ck.Name = b.Name + "-" + ck.Display
+				}
+				if ck.Port == 0 {
+					ck.Port = 110
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Ping:
