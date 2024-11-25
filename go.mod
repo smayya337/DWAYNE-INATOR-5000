@@ -14,6 +14,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/hirochachacha/go-smb2 v1.1.0
 	github.com/jlaffaye/ftp v0.1.0
+	github.com/knadh/go-pop3 v1.0.0
 	github.com/masterzen/winrm v0.0.0-20220917170901-b07f6cb0598d
 	github.com/miekg/dns v1.1.50
 	github.com/mitchellh/go-vnc v0.0.0-20150629162542-723ed9867aed
