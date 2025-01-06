@@ -460,7 +460,6 @@ func validateChecks(boxList []Box) error {
 					ck.Name = b.Name + "-" + ck.Display
 				}
 				boxList[i].CheckList[j] = ck
-			}
 			case checks.Pop:
 				ck := c.(checks.Pop)
 				ck.IP = b.IP
