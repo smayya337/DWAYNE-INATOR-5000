@@ -29,6 +29,18 @@ func authRequired(c *gin.Context) {
 	if id == nil {
 		c.Redirect(http.StatusSeeOther, "/login")
 		c.Abort()
+		return
+	}
+	c.Next()
+}
+
+// adminRequired ensures that a user is admin!
+func adminRequired(c *gin.Context) {
+	team := getUser(c)
+	if !team.IsAdmin() {
+		c.Redirect(http.StatusSeeOther, "/forbidden")
+		c.Abort()
+		return
 	}
 	c.Next()
 }
@@ -135,9 +147,6 @@ func getTeam(id uint) TeamData {
 		}
 	}
 	return TeamData{}
-}
-
-func getFromAllUsers(username string) {
 }
 
 func logout(c *gin.Context) {

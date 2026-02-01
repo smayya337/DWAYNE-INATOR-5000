@@ -424,11 +424,6 @@ func viewInjects(c *gin.Context) {
 
 func injectFeed(c *gin.Context) {
 	var submissions []InjectSubmission
-	team := getUser(c)
-	if !team.IsAdmin() {
-		errorOutAnnoying(c, errors.New("non-admin feed access"))
-		return
-	}
 	res := db.Find(&submissions, "invalid = false and feedback = '' and score = 0")
 	if res.Error != nil {
 		errorOutGraceful(c, res.Error)
@@ -450,7 +445,7 @@ func createInject(c *gin.Context) {
 		return
 	}
 
-	newInject.Time = ZeroTime.Add(time.Now().Sub(startTime))
+	newInject.Time = ZeroTime.Add(time.Since(startTime))
 
 	res := db.Create(&newInject)
 	if res.Error != nil {

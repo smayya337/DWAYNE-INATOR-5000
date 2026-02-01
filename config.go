@@ -2,10 +2,8 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"log"
-	"reflect"
+	"os"
 	"regexp"
 	"sort"
 	"strconv"
@@ -145,7 +143,7 @@ func getBoxChecks(b Box) []checks.Check {
 }
 
 func readConfig(conf *config) {
-	fileContent, err := ioutil.ReadFile(*configPath)
+	fileContent, err := os.ReadFile(*configPath)
 	if err != nil {
 		log.Fatalln("Configuration file ("+*configPath+") not found:", err)
 	}
@@ -285,7 +283,7 @@ func checkConfig(conf *config) error {
 
 	// look for duplicate team prefix
 	sort.SliceStable(conf.Team, func(i, j int) bool {
-		return conf.Team[i].IP < conf.Team[i].IP
+		return conf.Team[i].IP < conf.Team[j].IP
 	})
 
 	for i := 0; i < len(conf.Team)-1; i++ {
@@ -322,7 +320,7 @@ func checkConfig(conf *config) error {
 
 		// look for duplicate token
 		sort.SliceStable(conf.Team, func(i, j int) bool {
-			return conf.Team[i].Token < conf.Team[i].Token
+			return conf.Team[i].Token < conf.Team[j].Token
 		})
 
 		for i := 0; i < len(conf.Team)-1; i++ {
@@ -333,7 +331,7 @@ func checkConfig(conf *config) error {
 
 		// sort by ip again lol
 		sort.SliceStable(conf.Team, func(i, j int) bool {
-			return conf.Team[i].IP < conf.Team[i].IP
+			return conf.Team[i].IP < conf.Team[j].IP
 		})
 	}
 
@@ -368,9 +366,8 @@ func validateChecks(boxList []Box) error {
 		b.IP = strings.ToLower(b.IP)
 		boxList[i].IP = b.IP
 		for j, c := range boxList[i].CheckList {
-			switch c.(type) {
+			switch ck := c.(type) {
 			case checks.Cmd:
-				ck := c.(checks.Cmd)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "cmd"
@@ -383,7 +380,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Dns:
-				ck := c.(checks.Dns)
 				ck.IP = b.IP
 				ck.Anonymous = true // call me when you need authed DNS
 				if ck.Display == "" {
@@ -400,7 +396,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Ftp:
-				ck := c.(checks.Ftp)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "ftp"
@@ -418,7 +413,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Imap:
-				ck := c.(checks.Imap)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "imap"
@@ -444,7 +438,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Ldap:
-				ck := c.(checks.Ldap)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "ldap"
@@ -460,7 +453,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Ping:
-				ck := c.(checks.Ping)
 				ck.IP = b.IP
 				ck.Anonymous = true
 				if ck.Count == 0 {
@@ -474,7 +466,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Rdp:
-				ck := c.(checks.Rdp)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "rdp"
@@ -487,7 +478,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Smb:
-				ck := c.(checks.Smb)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "smb"
@@ -500,7 +490,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Smtp:
-				ck := c.(checks.Smtp)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "smtp"
@@ -513,7 +502,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Sql:
-				ck := c.(checks.Sql)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "sql"
@@ -543,7 +531,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Ssh:
-				ck := c.(checks.Ssh)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "ssh"
@@ -570,7 +557,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Tcp:
-				ck := c.(checks.Tcp)
 				ck.IP = b.IP
 				ck.Anonymous = true
 				if ck.Display == "" {
@@ -584,7 +570,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Vnc:
-				ck := c.(checks.Vnc)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "vnc"
@@ -597,7 +582,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Web:
-				ck := c.(checks.Web)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "web"
@@ -624,7 +608,6 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.WinRM:
-				ck := c.(checks.WinRM)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "winrm"
@@ -655,12 +638,6 @@ func validateChecks(boxList []Box) error {
 		}
 	}
 	return nil
-}
-
-func getCheckName(check checks.Check) string {
-	name := strings.Split(reflect.TypeOf(check).String(), ".")[1]
-	fmt.Println("name is ", name)
-	return name
 }
 
 func (m *config) GetFullIP(boxIP, teamIP string) string {

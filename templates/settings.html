@@ -6,6 +6,7 @@
 </hgroup>
 
 {{ $loc := .loc }}
+{{ $conf := .m }}
 {{ $time := .time }}
 {{ $user := .user }}
 
@@ -36,12 +37,12 @@
 
 <hgroup>
 <h2>Manual Point Adjustments</h2>
-<h3>Manual Point Adjustments</h3>
+<h3>Apply a manual change to a team's points.</h3>
 </hgroup>
 <form method="POST" action="/settings/adjust" style="text-align: center">
     <div class="grid">
     <select name="team">
-        {{ range $team := .m.Team }}
+        {{ range $team := $conf.Team }}
         <option value="{{ .ID }}">{{ .Name }}</option>
         {{ end }}
     </select>
@@ -60,7 +61,7 @@
 <th>Adjustment Value</th>
 {{ range $teamID, $adjustmentVal := .adjustments }}
 <tr>
-    {{ $team := index .m.Team $teamID }}
+    {{ $team := index $conf.Team (decrement $teamID) }}
 	<td>{{ $team.Name }}</td>
 	<td>{{ $adjustmentVal }}</td>
 </tr>
@@ -81,7 +82,7 @@
 
 <hgroup>
 <h2>Config Dump</h2>
-<h3>See what's running under the hood.</h3>
+<h3>This is the content of your config!</h3>
 </hgroup>
 
     <pre>

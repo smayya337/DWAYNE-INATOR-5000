@@ -50,11 +50,11 @@ var (
 	adjustmentMutex = &sync.Mutex{}
 )
 
-func errorPrint(a ...interface{}) {
+func errorPrint(a ...any) {
 	log.Printf("[ERROR] %s", fmt.Sprintln(a...))
 }
 
-func debugPrint(a ...interface{}) {
+func debugPrint(a ...any) {
 	if *debug {
 		log.Printf("[DEBUG] %s", fmt.Sprintln(a...))
 	}
@@ -137,6 +137,9 @@ func main() {
 	r.SetFuncMap(template.FuncMap{
 		"increment": func(x int) int {
 			return x + 1
+		},
+		"decrement": func(x uint) int {
+			return int(x - 1)
 		},
 		"mul": func(x, y int) int {
 			return x * y
@@ -221,36 +224,37 @@ func main() {
 
 		// Injects
 		authRoutes.GET("/injects", viewInjects)
-		authRoutes.GET("/injects/feed", injectFeed)
 		authRoutes.GET("/injects/view/:inject", viewInject)
 		authRoutes.POST("/injects/view/:inject", submitInject)
-		authRoutes.GET("/injects/delete/:inject", deleteInject)
-		authRoutes.POST("/injects/view/:inject/:submission/invalid", invalidateInject)
-		authRoutes.GET("/injects/view/:inject/:submission/grade", gradeInject)
-		authRoutes.POST("/injects/view/:inject/:submission/grade", submitInjectGrade)
 
 		// Inject submissions
 		authRoutes.Static("/submissions", "./submissions")
+		// Inject files are public
 		r.Static("/inject_files", "./injects")
+	}
+
+	adminRoutes := routes.Group("/")
+	adminRoutes.Use(adminRequired)
+	{
+		adminRoutes.GET("/injects/feed", injectFeed)
+		adminRoutes.GET("/injects/delete/:inject", deleteInject)
+		adminRoutes.POST("/injects/view/:inject/:submission/invalid", invalidateInject)
+		adminRoutes.GET("/injects/view/:inject/:submission/grade", gradeInject)
+		adminRoutes.POST("/injects/view/:inject/:submission/grade", submitInjectGrade)
 
 		// Settings
-		authRoutes.GET("/settings", viewSettings)
-		authRoutes.POST("/settings/reset", resetEvent)
-		authRoutes.POST("/settings/start", func(c *gin.Context) {
-			team := getUser(c)
-			if !team.IsAdmin() {
-				errorOutAnnoying(c, errors.New("non-admin tried to start scoring: "+c.Param("team")))
-				return
-			}
+		adminRoutes.GET("/settings", viewSettings)
+		adminRoutes.POST("/settings/reset", resetEvent)
+		adminRoutes.POST("/settings/start", func(c *gin.Context) {
 			dwConf.Running = true
 			c.Redirect(http.StatusSeeOther, "/settings")
 		})
-		authRoutes.POST("/settings/stop", pauseEvent)
-		authRoutes.POST("/settings/adjust", setManualAdjustment)
+		adminRoutes.POST("/settings/stop", pauseEvent)
+		adminRoutes.POST("/settings/adjust", setManualAdjustment)
 
 		// Resets
-		authRoutes.GET("/reset", viewResets)
-		authRoutes.POST("/reset/:id", submitReset)
+		adminRoutes.GET("/reset", viewResets)
+		adminRoutes.POST("/reset/:id", submitReset)
 	}
 
 	var injects []Inject
