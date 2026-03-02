@@ -433,7 +433,7 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Irc:
-				ck := c.(checks.Irc)
+				ck = c.(checks.Irc)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "irc"
@@ -461,7 +461,7 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Ntp:
-				ck := c.(checks.Ntp)
+				ck = c.(checks.Ntp)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "ntp"
@@ -471,7 +471,7 @@ func validateChecks(boxList []Box) error {
 				}
 				boxList[i].CheckList[j] = ck
 			case checks.Pop:
-				ck := c.(checks.Pop)
+				ck = c.(checks.Pop)
 				ck.IP = b.IP
 				if ck.Display == "" {
 					ck.Display = "pop"
