@@ -81,6 +81,7 @@ type Box struct {
 	Sql       []checks.Sql
 	Ssh       []checks.Ssh
 	Tcp       []checks.Tcp
+	Tftp	  []checks.Tftp
 	Vnc       []checks.Vnc
 	Web       []checks.Web
 	WinRM     []checks.WinRM
@@ -136,6 +137,9 @@ func getBoxChecks(b Box) []checks.Check {
 		checkList = append(checkList, c)
 	}
 	for _, c := range b.Tcp {
+		checkList = append(checkList, c)
+	}
+	for _, c := range b.Tftp {
 		checkList = append(checkList, c)
 	}
 	for _, c := range b.Vnc {
