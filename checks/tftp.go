@@ -1,7 +1,7 @@
 package checks
 
 import (
-	"io/ioutil"
+	"bytes"
 	"math/rand"
 	"regexp"
 	"strconv"

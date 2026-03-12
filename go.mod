@@ -22,6 +22,7 @@ require (
 	github.com/masterzen/winrm v0.0.0-20220917170901-b07f6cb0598d
 	github.com/miekg/dns v1.1.50
 	github.com/mitchellh/go-vnc v0.0.0-20150629162542-723ed9867aed
+	github.com/pin/tftp/v3 v3.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/pmezard/go-difflib v1.0.0
 	golang.org/x/crypto v0.41.0
