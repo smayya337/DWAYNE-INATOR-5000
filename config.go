@@ -604,6 +604,23 @@ func validateChecks(boxList []Box) error {
 					return errors.New("tcp port required")
 				}
 				boxList[i].CheckList[j] = ck
+			case checks.Tftp:
+				ck.IP = b.IP
+				if ck.Display == "" {
+					ck.Display = "tftp"
+				}
+				if ck.Name == "" {
+					ck.Name = b.Name + "-" + ck.Display
+				}
+				if ck.Port == 0 {
+					ck.Port = 69
+				}
+				for _, f := range ck.File {
+					if f.Regex != "" && f.Hash != "" {
+						return errors.New("can't have both regex and hash for tftp file check")
+					}
+				}
+				boxList[i].CheckList[j] = ck
 			case checks.Vnc:
 				ck.IP = b.IP
 				if ck.Display == "" {
